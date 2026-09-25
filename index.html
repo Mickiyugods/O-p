@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OWNLY — Token Launchpad on Robinhood Chain</title>
+  <meta name="description" content="Launch your own token on Robinhood Chain with automated bonding curves. Deploy, trade, and manage tokens with OWNLY.">
+  <meta property="og:title" content="OWNLY — Token Launchpad on Robinhood Chain">
+  <meta property="og:description" content="Launch your own token on Robinhood Chain with automated bonding curves. Deploy, trade, and manage tokens with OWNLY.">
+  <meta property="og:image" content="/assets/logo-sm.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="OWNLY — Token Launchpad on Robinhood Chain">
+  <meta name="twitter:description" content="Launch your own token on Robinhood Chain with automated bonding curves.">
+  <meta name="twitter:image" content="/assets/logo-sm.png">
+  <meta name="theme-color" content="#E8F5F5">
+  <link rel="icon" type="image/png" href="/assets/logo-sm.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Glass Ribbon Background -->
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo" data-link>
+        <img src="/assets/logo-sm.png" alt="OWNLY" class="logo-img">
+        <span class="logo-text">OWNLY</span>
+      </a>
+      <div class="nav-center">
+        <div class="nav-links">
+          <a href="/" class="nav-link active" data-link>Explore</a>
+          <a href="/create" class="nav-link" data-link>Create</a>
+          <a href="/portfolio" class="nav-link" data-link>Portfolio</a>
+          <a href="/agents" class="nav-link" data-link>AI Agents</a>
+        </div>
+      </div>
+      <button class="btn-connect" id="btnConnect">
+        <span>Connect Wallet</span>
+      </button>
+      <button class="mobile-menu" id="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="/" class="nav-link active" data-link>Explore</a>
+    <a href="/create" class="nav-link" data-link>Create</a>
+    <a href="/portfolio" class="nav-link" data-link>Portfolio</a>
+    <a href="/agents" class="nav-link" data-link>AI Agents</a>
+  </div>
+
+  <!-- Recent Buys Ticker -->
+  <div class="ticker-bar" id="tickerBar">
+    <div class="ticker-label">
+      <span class="ticker-dot"></span>
+      LIVE
+    </div>
+    <div class="ticker-track">
+      <div class="ticker-content" id="tickerContent">
+        <span class="ticker-placeholder">Connected · Watching for trades...</span>
+      </div>
+    </div>
+    <div class="chain-info">
+      <span class="chain-info-item">Network</span>
+      <span class="chain-info-network">
+        <img src="/assets/robinhood-chain.png" alt="" width="16" height="16" class="chain-info-logo">
+        Robinhood Chain
+      </span>
+      <span class="chain-info-sep">|</span>
+      <span class="chain-info-item">Gas</span>
+      <span class="chain-info-val" id="chainGas">— Gwei</span>
+      <span class="chain-info-sep">|</span>
+      <span class="chain-info-item">Block</span>
+      <span class="chain-info-val" id="chainBlock">#—</span>
+    </div>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-bar" id="searchBar">
+    <div class="search-bar-inner">
+      <div class="search-bar-input">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Search tokens by name or symbol..." id="globalSearch">
+      </div>
+      <a href="/create" class="btn btn-primary" data-link>+ Create</a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main id="app"></main>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Templates -->
+  <template id="tpl-home">
+    <section class="explore-page">
+      <!-- Page Header -->
+      <div class="explore-header">
+        <div class="explore-header-text">
+          <h1 class="explore-title">Explore <span class="explore-title-accent">Tokens</span></h1>
+          <p class="explore-subtitle">Discover new tokens, early opportunities, and innovative ideas on OWNLY.</p>
+        </div>
+        <div class="explore-header-right">
+          <div class="explore-header-words">
+            <span>CREATE</span>
+            <span>LAUNCH</span>
+            <span>GROW</span>
+            <span>TOGETHER</span>
+          </div>
+          <a href="/create" class="btn btn-primary btn-create-hero" data-link>+ Create Token</a>
+        </div>
+      </div>
+
+      <!-- Search + Sort Row -->
+      <div class="explore-controls">
+        <div class="explore-search" id="exploreSearchWrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" placeholder="Search tokens by name or symbol..." id="exploreSearch">
+        </div>
+        <div class="sort-bar" id="sortBar">
+          <button class="sort-btn active" data-sort="newest">Newest</button>
+          <button class="sort-btn" data-sort="mcap">Market Cap</button>
+          <button class="sort-btn" data-sort="recent">Recent Buys</button>
+        </div>
+      </div>
+
+      <!-- Featured Token -->
+      <section class="featured-section" id="officialSection" style="display:none">
+        <div class="featured-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01z"/></svg>
+          Featured
+        </div>
+        <div class="official-cards" id="officialCards">
+          <!-- Official agents loaded dynamically -->
+        </div>
+      </section>
+
+      <!-- Community Launches -->
+      <section class="token-section" id="tokenList">
+        <div class="section-header">
+          <div class="section-header-left">
+            <svg class="section-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <h2 class="section-title">Community Launches</h2>
+            <span class="section-count" id="statTokens">0</span>
+          </div>
+          <a href="#" class="view-all-link" id="viewAllLink">View All <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+        </div>
+        <div class="token-grid" id="tokenGrid">
+          <!-- Agents loaded dynamically -->
+        </div>
+      </section>
+    </section>
+  </template>
+
+  <template id="tpl-create">
+    <section class="create-page">
+      <div class="create-page-header">
+        <div class="create-header-left">
+          <a href="/" data-link class="create-back">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+          </a>
+          <h1 class="create-page-title">Launch <span class="accent-text">Your Token</span></h1>
+          <p class="create-page-desc">Create and deploy your token on <span id="createNetworkName">Robinhood Chain</span> in just a few clicks.<br>Simple. Secure. Built for everyone.</p>
+        </div>
+        <div class="create-header-right">
+          <div class="network-indicator">
+            <img src="/assets/robinhood-chain.png" alt="Robinhood Chain" width="20" height="20" style="border-radius:4px">
+            <span id="createNetworkName2">Robinhood Chain</span>
+            <span class="mainnet-badge">Mainnet</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="create-layout">
+        <div class="create-main">
+          <form id="createForm">
+
+            <div class="form-section create-form-card">
+              <div class="form-section-header">
+                <span class="section-number">1</span>
+                <div>
+                  <h3 class="form-section-title">Token Details</h3>
+                  <p class="form-section-sub">Basic information about your token.</p>
+                </div>
+              </div>
+
+              <div class="token-details-grid">
+                <div class="upload-col">
+                  <label class="form-label">Token Image</label>
+                  <div class="logo-upload-zone" id="btnChooseImage">
+                    <input type="file" id="tokenLogo" accept="image/*" hidden>
+                    <div class="upload-placeholder" id="uploadPlaceholder">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <span class="upload-text">Click to upload</span>
+                      <span class="upload-hint">PNG, JPG, WebP — Max 5MB</span>
+                    </div>
+                    <div class="upload-preview" id="uploadPreview" hidden>
+                      <img id="logoPreview" class="logo-preview-img" alt="">
+                      <div class="upload-preview-actions">
+                        <button type="button" class="upload-action-btn" id="btnReplace">Replace</button>
+                        <button type="button" class="upload-action-btn upload-action-remove" id="btnRemove">Remove</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="fields-col">
+                  <div class="form-group">
+                    <label for="tokenName" class="form-label">Token Name <svg class="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></label>
+                    <input type="text" id="tokenName" placeholder="e.g. AlphaTrader" required maxlength="32">
+                  </div>
+                  <div class="form-group">
+                    <label for="tokenSymbol" class="form-label">Ticker <svg class="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></label>
+                    <input type="text" id="tokenSymbol" placeholder="e.g. ALPHA" required maxlength="8" style="text-transform:uppercase">
+                  </div>
+                  <div class="form-group">
+                    <label for="tokenDesc" class="form-label">Description <svg class="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></label>
+                    <textarea id="tokenDesc" placeholder="Tell people about your token..." rows="3" maxlength="500"></textarea>
+                    <span class="form-hint"><span id="descCount">0</span>/500</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section create-form-card">
+              <div class="form-section-header">
+                <span class="section-number">2</span>
+                <div>
+                  <h3 class="form-section-title">Social Links</h3>
+                  <p class="form-section-sub">Optional, but helps your project grow.</p>
+                </div>
+              </div>
+
+              <div class="form-row-inline">
+                <div class="form-group form-grow">
+                  <label for="tokenTwitter" class="form-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> X (Twitter)</label>
+                  <div class="prefixed-input">
+                    <span class="input-prefix">x.com/</span>
+                    <input type="text" id="tokenTwitter" placeholder="username">
+                  </div>
+                </div>
+                <div class="form-group form-grow">
+                  <label for="tokenTelegram" class="form-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg> Telegram</label>
+                  <div class="prefixed-input">
+                    <span class="input-prefix">t.me/</span>
+                    <input type="text" id="tokenTelegram" placeholder="yourgroup">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section create-form-card">
+              <div class="form-section-header">
+                <span class="section-number">3</span>
+                <div>
+                  <h3 class="form-section-title">Launch Settings</h3>
+                  <p class="form-section-sub">Configure your token launch.</p>
+                </div>
+              </div>
+
+              <div class="form-row-inline">
+                <div class="form-group form-grow">
+                  <label class="form-label">Paired Asset <svg class="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></label>
+                  <div class="pair-select" id="pairSelect">
+                    <button type="button" class="pair-select-btn" id="pairSelectBtn">
+                      <img class="pair-select-img" id="pairSelectedImg" src="/assets/pairs/ethereum.png" alt="">
+                      <span id="pairSelectedSymbol">ETH</span>
+                      <svg class="pair-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="pair-dropdown" id="pairDropdown"></div>
+                  </div>
+                  <span class="form-hint" id="pairHint">Graduates once the curve raises 4.2 ETH</span>
+                </div>
+                <div class="form-group form-grow">
+                  <label for="initialBuy" class="form-label">Initial Buy (Optional) <svg class="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></label>
+                  <div class="suffixed-input">
+                    <input type="number" id="initialBuy" placeholder="0.0" step="any" min="0">
+                    <span class="input-suffix">ETH</span>
+                  </div>
+                  <span class="form-hint">Buy tokens at launch for yourself.</span>
+                </div>
+              </div>
+
+              <div class="advanced-section" id="advancedSection">
+                <button type="button" class="advanced-toggle" id="advancedToggle">
+                  <div class="advanced-toggle-left">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <span class="advanced-toggle-title">Advanced Settings</span>
+                  </div>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="advanced-body" id="advancedBody">
+                  <div class="form-group">
+                    <label for="creatorTax" class="form-label">Creator tax (%)</label>
+                    <input type="number" id="creatorTax" placeholder="0" min="0" max="10" step="1" value="0">
+                    <span class="form-hint">Traders pay 1.00% in total, up to 10% of it yours</span>
+                  </div>
+                  <div class="form-group">
+                    <label for="tokenDiscord" class="form-label">Discord</label>
+                    <div class="prefixed-input">
+                      <span class="input-prefix">discord.gg/</span>
+                      <input type="text" id="tokenDiscord" placeholder="invite">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="tokenWebsite" class="form-label">Website</label>
+                    <input type="url" id="tokenWebsite" placeholder="https://...">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="create-footer-bar">
+              <div class="footer-bar-info">
+                <span class="footer-bar-pair" id="footerPair">ETH pair</span>
+                <span class="footer-bar-due">ETH <strong id="footerDue">0.0005</strong> due</span>
+              </div>
+              <button type="submit" class="btn btn-primary btn-deploy" id="btnCreate">
+                Deploy Token
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="create-sidebar">
+          <div class="sidebar-preview">
+            <div class="sp-header">
+              <div class="sp-header-top">
+                <span class="sp-card-label">Token Preview</span>
+                <span class="sp-draft-badge">Draft</span>
+              </div>
+              <div class="sp-logo-ring">
+                <div class="sp-logo" id="previewLogo">
+                  <img src="/assets/logo.png" alt="OWNLY" style="width:100%;height:100%;object-fit:contain;border-radius:50%;padding:8px">
+                </div>
+              </div>
+              <h2 class="sp-name" id="previewName">Your Token</h2>
+              <span class="sp-ticker-pill" id="previewSymbol">$TICKER</span>
+              <p class="sp-desc" id="previewDesc">A short description of your token will appear here...</p>
+              <div class="sp-social-icons">
+                <span class="sp-social-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
+                <span class="sp-social-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0h-.056zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></span>
+                <span class="sp-social-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="launch-summary-card">
+            <h4 class="sp-summary-title">Launch Summary</h4>
+            <div class="sp-stats">
+              <div class="sp-stat-row">
+                <span class="sp-stat-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v12"/><path d="M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M18 9a9 9 0 0 1-9 9"/></svg> Launch fee</span>
+                <span class="sp-stat-value"><img src="/assets/pairs/ethereum.png" alt="ETH" class="sp-eth-icon"> <span id="previewFee">0.0005</span> ETH</span>
+              </div>
+              <div class="sp-stat-row">
+                <span class="sp-stat-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 17 6-12 6 12"/><path d="M8 13h8"/></svg> Paired with</span>
+                <span class="sp-stat-value" id="previewPair"><img src="/assets/pairs/ethereum.png" alt="ETH" class="sp-eth-icon"> ETH</span>
+              </div>
+              <div class="sp-stat-row">
+                <span class="sp-stat-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Initial buy</span>
+                <span class="sp-stat-value" id="previewInitialBuy"><img src="/assets/pairs/ethereum.png" alt="ETH" class="sp-eth-icon"> 0.0 ETH</span>
+              </div>
+              <div class="sp-stat-row">
+                <span class="sp-stat-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> Trade fee</span>
+                <span class="sp-stat-value" id="previewTradeFee">1.00%</span>
+              </div>
+              <div class="sp-stat-row">
+                <span class="sp-stat-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Launch protection <svg class="info-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
+                <span class="sp-stat-value">99% snipe tax, 3s</span>
+              </div>
+              <div class="sp-stat-row">
+                <span class="sp-stat-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/></svg> Graduation</span>
+                <span class="sp-stat-value"><img src="/assets/pairs/ethereum.png" alt="ETH" class="sp-eth-icon"> 4.2 ETH</span>
+              </div>
+              <div class="sp-stat-row">
+                <span class="sp-stat-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Liquidity</span>
+                <span class="sp-stat-value"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Locked</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="safe-notice">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <div>
+              <strong>On-Chain &amp; Transparent</strong>
+              <p>All tokens are deployed directly on-chain with transparent and verifiable rules.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <template id="tpl-portfolio">
+    <section class="portfolio-page">
+      <div class="portfolio-container">
+        <div class="portfolio-header">
+          <div class="portfolio-header-left">
+            <h1>Your <span class="accent-text">Portfolio</span></h1>
+            <p>Manage your tokens and holdings on Robinhood Chain.</p>
+          </div>
+          <div class="portfolio-tagline">
+            <div class="pf-tagline-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
+            <div><strong>Track. Manage. Grow.</strong><span>All your tokens in one place.</span></div>
+          </div>
+        </div>
+        <div id="portfolioContent">
+          <div class="pf-connect-card">
+            <div class="pf-connect-main">
+              <div class="pf-connect-illus">
+                <img src="/assets/wallet-glass.webp" alt="" class="pf-wallet-img" draggable="false" oncontextmenu="return false">
+              </div>
+              <div class="pf-connect-content">
+                <span class="pf-connect-status"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#476267" stroke-width="1.5"/></svg> Not connected</span>
+                <h2 class="pf-connect-title">Connect Your Wallet</h2>
+                <p class="pf-connect-desc">Connect your wallet to view your tokens, holdings, and trading history on <span id="pfNetworkName">Robinhood Chain</span>.</p>
+                <button class="pf-connect-btn" onclick="window.walletManager.connect()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg> Connect Wallet <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+              </div>
+            </div>
+            <div class="pf-features">
+              <div class="pf-feature-chip">
+                <div class="pf-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                <div><strong>View Your Tokens</strong><span>See all your holdings</span></div>
+              </div>
+              <div class="pf-feature-chip">
+                <div class="pf-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div><strong>Track History</strong><span>Your trades in one place</span></div>
+              </div>
+              <div class="pf-feature-chip">
+                <div class="pf-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
+                <div><strong>Manage Assets</strong><span>Monitor performance</span></div>
+              </div>
+              <div class="pf-feature-chip">
+                <div class="pf-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+                <div><strong>Your Keys</strong><span>Non-custodial wallet</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <template id="tpl-token">
+    <section class="token-page">
+      <div class="token-detail-container" id="tokenDetailContent">
+        <!-- Loaded dynamically -->
+      </div>
+    </section>
+  </template>
+
+  <!-- AI Agents (coming soon) -->
+    <template id="tpl-agents">
+      <section class="agents-page">
+        <div class="agents-container">
+          <!-- Hero -->
+          <div class="ag-hero">
+            <div class="ag-hero-left">
+              <span class="ag-hero-tag">INTELLIGENCE MEETS OPPORTUNITY</span>
+              <h1>Ownly <span class="accent-text">AI Agents</span></h1>
+              <p class="ag-hero-sub">Your always-on partners for token projects.</p>
+              <p class="ag-hero-desc">Create, deploy, and use AI agents to grow, manage, and engage your community — all on Robinhood Chain.</p>
+            </div>
+            <div class="ag-hero-illus" oncontextmenu="return false" style="user-select:none;-webkit-user-select:none">
+              <img src="/assets/agent-empty.png" alt="" draggable="false" style="pointer-events:none">
+            </div>
+          </div>
+
+          <!-- Coming Soon -->
+          <div class="ag-coming-soon">
+            <div class="ag-soon-badge">COMING SOON</div>
+            <h2>AI Agents are on the way</h2>
+            <p>We're building intelligent agents that will help you grow, manage, and engage your token community — automatically.</p>
+            <div class="ag-soon-features">
+              <div class="ag-soon-feat">
+                <div class="ag-soon-feat-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <h4>Community</h4>
+                <p>Auto-moderate and engage your community 24/7</p>
+              </div>
+              <div class="ag-soon-feat">
+                <div class="ag-soon-feat-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                </div>
+                <h4>Analytics</h4>
+                <p>Track token metrics and whale movements in real-time</p>
+              </div>
+              <div class="ag-soon-feat">
+                <div class="ag-soon-feat-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                </div>
+                <h4>Marketing</h4>
+                <p>Automated posting and promotion across channels</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </template>
+
+  <template id="tpl-how">
+    <section class="info-page">
+      <div class="info-container">
+        <div class="info-hero">
+          <h1>How it Works</h1>
+          <p class="info-subtitle">Launch AI agent tokens on Robinhood Chain with fair bonding curves</p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <h3>Connect Wallet</h3>
+            <p>Connect MetaMask, Rabby, or any EVM wallet. OWNLY automatically switches your network to Robinhood Chain (Chain ID 4663).</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01z"/></svg>
+            </div>
+            <h3>Create AI Agent Token</h3>
+            <p>Set your agent's name, symbol, and description. Upload a logo, add social links, and optionally configure creator tax and initial buy.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <h3>Fair Launch via Bonding Curve</h3>
+            <p>Your token deploys on an automated bonding curve. Price starts low and rises with demand. Built-in snipe protection ensures a fair launch for everyone.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">4</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            </div>
+            <h3>Trade in Real Time</h3>
+            <p>Buy and sell tokens directly on the bonding curve. Track live prices, view trade history, monitor holders, and adjust slippage to your preference.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">5</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h3>Graduation to DEX</h3>
+            <p>When the bonding curve reaches 4.2 ETH in reserves, the token graduates automatically. Liquidity migrates to a Uniswap V4 pool on-chain.</p>
+          </div>
+
+          <div class="step-card">
+            <div class="step-number">6</div>
+            <div class="step-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3>Liquidity Locked Forever</h3>
+            <p>After graduation, liquidity is permanently locked in the pool. No one can pull it. The token continues trading freely on decentralized exchanges.</p>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h2>Fee Structure</h2>
+          <div class="fee-table">
+            <div class="fee-row">
+              <span class="fee-label">Token launch fee</span>
+              <span class="fee-value">0.0005 ETH</span>
+            </div>
+            <div class="fee-row">
+              <span class="fee-label">Trading fee</span>
+              <span class="fee-value">1% per trade</span>
+            </div>
+            <div class="fee-row">
+              <span class="fee-label">Creator tax (optional)</span>
+              <span class="fee-value">Up to 10% of the 1% trading fee</span>
+            </div>
+            <div class="fee-row">
+              <span class="fee-label">Snipe protection</span>
+              <span class="fee-value">99% tax for first 3 seconds after launch</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h2>Tokenomics</h2>
+          <p>Every token on OWNLY has a fixed supply of <strong>1,000,000,000</strong> tokens. No minting, no inflation, no hidden allocations. The entire supply enters the bonding curve at launch, ensuring transparent and fair distribution.</p>
+        </div>
+
+        <div class="info-cta">
+          <a href="/create" class="btn btn-primary" data-link>Launch Your Agent Token</a>
+          <a href="/docs" class="btn btn-outline" data-link>Read the Docs</a>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <template id="tpl-docs">
+    <section class="info-page">
+      <div class="info-container">
+        <div class="info-hero">
+          <h1>Documentation</h1>
+          <p class="info-subtitle">Technical reference for the OWNLY AI Agent Launchpad</p>
+        </div>
+
+        <div class="docs-layout">
+          <nav class="docs-sidebar" id="docsSidebar">
+            <div class="docs-nav-group">
+              <span class="docs-nav-title">Getting Started</span>
+              <a href="#" class="docs-nav-link active" data-doc="overview">Overview</a>
+              <a href="#" class="docs-nav-link" data-doc="chain">Robinhood Chain</a>
+              <a href="#" class="docs-nav-link" data-doc="wallet">Wallet Setup</a>
+            </div>
+            <div class="docs-nav-group">
+              <span class="docs-nav-title">AI Agent Tokens</span>
+              <a href="#" class="docs-nav-link" data-doc="create">Creating a Token</a>
+              <a href="#" class="docs-nav-link" data-doc="bonding">Bonding Curve</a>
+              <a href="#" class="docs-nav-link" data-doc="graduation">Graduation to DEX</a>
+            </div>
+            <div class="docs-nav-group">
+              <span class="docs-nav-title">Trading</span>
+              <a href="#" class="docs-nav-link" data-doc="buy">Buying Tokens</a>
+              <a href="#" class="docs-nav-link" data-doc="sell">Selling Tokens</a>
+              <a href="#" class="docs-nav-link" data-doc="slippage">Slippage Settings</a>
+            </div>
+            <div class="docs-nav-group">
+              <span class="docs-nav-title">Smart Contracts</span>
+              <a href="#" class="docs-nav-link" data-doc="contracts">Contract Addresses</a>
+              <a href="#" class="docs-nav-link" data-doc="abi">ABI Reference</a>
+            </div>
+          </nav>
+
+          <div class="docs-content" id="docsContent">
+          </div>
+        </div>
+      </div>
+    </section>
+  </template>
+
+  <!-- Privacy Policy -->
+  <template id="tpl-privacy">
+    <section class="info-page legal-page">
+      <div class="legal-content">
+        <h1>Privacy Policy</h1>
+        <p class="legal-updated">Last updated: September 2026</p>
+
+        <h2>1. Introduction</h2>
+        <p>OWNLY ("we," "our," or "the platform") is a decentralized AI agent token launchpad operating on Robinhood Chain. This Privacy Policy explains how we handle information when you use our platform.</p>
+
+        <h2>2. Information We Collect</h2>
+        <p>OWNLY is fully non-custodial. We do not create user accounts, collect personal information, or store private keys. The only data we process includes:</p>
+        <ul>
+          <li><strong>Wallet addresses</strong> — publicly visible on-chain data, used solely to display your portfolio, holdings, and transaction history within the platform</li>
+          <li><strong>On-chain transactions</strong> — read directly from the Robinhood Chain blockchain, which is public and transparent by design</li>
+          <li><strong>Token metadata</strong> — names, symbols, descriptions, and images uploaded by token creators during the launch process</li>
+          <li><strong>Basic analytics</strong> — anonymous page views and usage patterns to improve the platform experience (no cookies or personal identifiers are used)</li>
+        </ul>
+
+        <h2>3. Blockchain Data</h2>
+        <p>All interactions with OWNLY smart contracts are recorded on Robinhood Chain. Blockchain data is public and immutable — your wallet address, trade amounts, and token interactions are permanently visible on the network. This is inherent to blockchain technology and is not controlled by OWNLY.</p>
+
+        <h2>4. Third-Party Services</h2>
+        <p>OWNLY interacts with the following external services to provide its functionality:</p>
+        <ul>
+          <li><strong>Robinhood Chain RPC</strong> — to read blockchain state and submit transactions</li>
+          <li><strong>Blockscout Explorer API</strong> — to fetch token data, holder lists, trade history, and contract verification</li>
+          <li><strong>Supabase</strong> — to store token metadata (name, description, image) submitted during token creation</li>
+        </ul>
+        <p>Each service operates under its own privacy policy. We do not share personal data with these providers beyond what is necessary for core platform functionality.</p>
+
+        <h2>5. Data Storage</h2>
+        <p>OWNLY does not maintain databases of personal user information. Token metadata submitted during creation is stored to enable token discovery. Browser-level preferences (such as theme settings) are stored locally on your device and can be cleared at any time.</p>
+
+        <h2>6. Wallet Security</h2>
+        <p>All smart contract interactions are signed directly by your wallet. OWNLY never has access to your private keys, seed phrases, or wallet credentials. You are solely responsible for securing your wallet and any funds or tokens within it.</p>
+
+        <h2>7. Changes to This Policy</h2>
+        <p>We may update this Privacy Policy from time to time. Changes will be reflected on this page with an updated revision date. Continued use of the platform after changes are posted constitutes acceptance.</p>
+
+        <h2>8. Contact</h2>
+        <p>For questions about this Privacy Policy, reach out via our official account on <a href="https://x.com/Ownlydotfamily" target="_blank" rel="noopener">X (@Ownlydotfamily)</a>.</p>
+      </div>
+    </section>
+  </template>
+
+  <!-- Terms of Use -->
+  <template id="tpl-terms">
+    <section class="info-page legal-page">
+      <div class="legal-content">
+        <h1>Terms of Service</h1>
+        <p class="legal-updated">Last updated: September 2026</p>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>By accessing or using OWNLY, you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, do not use the platform.</p>
+
+        <h2>2. Platform Description</h2>
+        <p>OWNLY is a decentralized AI agent token launchpad built on Robinhood Chain. It provides a front-end interface for creating and trading AI agent tokens through on-chain smart contracts using automated bonding curve mechanics. OWNLY does not operate as an exchange, broker, or financial institution.</p>
+
+        <h2>3. Non-Custodial Nature</h2>
+        <p>OWNLY is entirely non-custodial. We do not hold, control, or have access to your funds, tokens, or private keys at any time. All transactions are executed directly between your wallet and the smart contracts deployed on Robinhood Chain. You are solely responsible for your wallet security and all actions taken through it.</p>
+
+        <h2>4. Eligibility</h2>
+        <p>You must be of legal age in your jurisdiction to use this platform. You are responsible for ensuring that your use of OWNLY complies with all applicable laws and regulations in your jurisdiction. Access to the platform does not constitute an offer or solicitation in any jurisdiction where such activities are prohibited.</p>
+
+        <h2>5. Risk Disclosure</h2>
+        <p>By using OWNLY, you acknowledge and accept the following risks:</p>
+        <ul>
+          <li>AI agent token values are highly volatile and can decrease to zero</li>
+          <li>Blockchain transactions are irreversible once confirmed on-chain</li>
+          <li>Smart contracts may contain undiscovered vulnerabilities despite best efforts</li>
+          <li>Bonding curve pricing is algorithmic — token prices fluctuate based on real-time supply and demand</li>
+          <li>Network congestion on Robinhood Chain may affect transaction timing and gas costs</li>
+          <li>Regulatory changes may impact the availability or legality of certain features in your jurisdiction</li>
+          <li>Past performance of any token does not guarantee future results</li>
+        </ul>
+
+        <h2>6. Prohibited Uses</h2>
+        <p>You agree not to use OWNLY to:</p>
+        <ul>
+          <li>Launch tokens intended to defraud, scam, or mislead others</li>
+          <li>Manipulate markets through wash trading, front-running, or coordinated pump-and-dump schemes</li>
+          <li>Violate any applicable laws, regulations, or third-party intellectual property rights</li>
+          <li>Interfere with, exploit, or attack the platform's infrastructure or smart contracts</li>
+          <li>Impersonate other users, projects, public figures, or entities</li>
+          <li>Upload harmful, offensive, or illegal content as token metadata</li>
+        </ul>
+
+        <h2>7. No Financial Advice</h2>
+        <p>Nothing on OWNLY constitutes financial, investment, legal, or tax advice. All trading and token creation decisions are your own responsibility. We strongly recommend conducting your own research (DYOR) before creating, purchasing, or selling any token on the platform.</p>
+
+        <h2>8. Fees</h2>
+        <p>The following fees apply on the OWNLY platform:</p>
+        <ul>
+          <li><strong>Token launch fee:</strong> 0.0005 ETH per token creation</li>
+          <li><strong>Trading fee:</strong> 1% per bonding curve transaction</li>
+          <li><strong>Creator tax:</strong> Optional, up to 10% of the 1% trading fee, set by the token creator</li>
+          <li><strong>Gas fees:</strong> Standard Robinhood Chain network fees apply to all on-chain interactions</li>
+        </ul>
+        <p>Fee structures may be updated. Changes will be communicated through the platform interface.</p>
+
+        <h2>9. Limitation of Liability</h2>
+        <p>OWNLY is provided "as is" and "as available" without warranties of any kind, express or implied. To the maximum extent permitted by law, we shall not be liable for any direct, indirect, incidental, special, or consequential damages arising from your use of the platform, including but not limited to loss of funds, tokens, or data.</p>
+
+        <h2>10. Intellectual Property</h2>
+        <p>The OWNLY name, logo, interface design, and associated materials are proprietary. Users retain ownership of tokens they create through the platform, subject to applicable laws. Token creators are solely responsible for the content and branding they upload.</p>
+
+        <h2>11. Modifications</h2>
+        <p>We reserve the right to modify these Terms of Service at any time. Continued use of OWNLY after changes are posted constitutes acceptance of the revised terms. Material changes will be highlighted on the platform.</p>
+
+        <h2>12. Contact</h2>
+        <p>For questions regarding these Terms of Service, reach out via our official account on <a href="https://x.com/Ownlydotfamily" target="_blank" rel="noopener">X (@Ownlydotfamily)</a>.</p>
+      </div>
+    </section>
+  </template>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="/" class="footer-logo" data-link>
+            <img src="/assets/logo-sm.png" alt="OWNLY" class="logo-img">
+            <span class="logo-text">OWNLY</span>
+          </a>
+          <p class="footer-desc">AI Agent Launchpad on Robinhood Chain. Create, launch, and trade AI agent tokens with fair bonding curves. All trades execute directly through your wallet — OWNLY never holds your funds.</p>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">Product</h4>
+          <a href="/" class="footer-link" data-link>Explore Tokens</a>
+          <a href="/create" class="footer-link" data-link>Create Token</a>
+          <a href="/portfolio" class="footer-link" data-link>Portfolio</a>
+          <a href="/agents" class="footer-link" data-link>AI Agents</a>
+          <a href="/how" class="footer-link" data-link>How it Works</a>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">Resources</h4>
+          <a href="/docs" class="footer-link" data-link>Documentation</a>
+          <a href="/terms" class="footer-link" data-link>Terms of Service</a>
+          <a href="/privacy" class="footer-link" data-link>Privacy Policy</a>
+        </div>
+        <div class="footer-col footer-risk">
+          <h4 class="footer-heading">Disclaimer</h4>
+          <p class="footer-risk-text">OWNLY is a decentralized launchpad. All transactions are on-chain and may be irreversible. Token prices are determined by bonding curve mechanics and can be highly volatile. OWNLY does not provide financial advice. Trade at your own risk.</p>
+        </div>
+        <div class="footer-bottom">
+          <span class="footer-copy">&copy; 2026 OWNLY. All rights reserved.</span>
+          <div class="footer-socials">
+            <a href="https://x.com/Ownlydotfamily" target="_blank" rel="noopener" class="footer-social" title="@Ownlydotfamily on X">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <span>@Ownlydotfamily</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="/js/pairs.js"></script>
+  <script src="/js/contracts.js"></script>
+  <script src="/js/pons-api.js"></script>
+  <script src="/js/wallet.js"></script>
+  <script src="/js/registry.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

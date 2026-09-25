@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a3a4a"/>
+      <stop offset="100%" stop-color="#0d2630"/>
+    </linearGradient>
+    <linearGradient id="coin" x1="20" y1="16" x2="60" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#5eecd5"/>
+      <stop offset="50%" stop-color="#2dbab2"/>
+      <stop offset="100%" stop-color="#1a8a82"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="28" y1="20" x2="52" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="innerShadow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feOffset dx="0" dy="1" result="offsetBlur"/>
+      <feComposite in="SourceGraphic" in2="offsetBlur" operator="over"/>
+    </filter>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="40" cy="40" r="38" fill="url(#bg)" stroke="#2dbab2" stroke-width="1.5" stroke-opacity="0.3"/>
+  <!-- Outer glow ring -->
+  <circle cx="40" cy="40" r="36" fill="none" stroke="#2dbab2" stroke-width="0.5" stroke-opacity="0.15"/>
+  <!-- Coin body -->
+  <circle cx="40" cy="40" r="24" fill="url(#coin)" filter="url(#glow)" opacity="0.9"/>
+  <!-- Coin inner ring -->
+  <circle cx="40" cy="40" r="20" fill="none" stroke="#0d2630" stroke-width="1.2" stroke-opacity="0.25"/>
+  <!-- Coin highlight -->
+  <ellipse cx="36" cy="32" rx="12" ry="8" fill="url(#shine)"/>
+  <!-- Dollar sign -->
+  <g filter="url(#innerShadow)">
+    <path d="M40 26v2.5" stroke="#0d2630" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M40 51.5v2.5" stroke="#0d2630" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M34.5 33.5c0-2.8 2.5-5 5.5-5s5.5 2.2 5.5 5c0 2.8-2.5 4.2-5.5 5.2s-5.5 2.4-5.5 5.2c0 2.8 2.5 5 5.5 5s5.5-2.2 5.5-5" stroke="#0d2630" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- Small sparkles -->
+  <circle cx="18" cy="18" r="1.5" fill="#5eecd5" opacity="0.7"/>
+  <circle cx="62" cy="22" r="1" fill="#5eecd5" opacity="0.5"/>
+  <circle cx="16" cy="55" r="1" fill="#5eecd5" opacity="0.4"/>
+  <circle cx="64" cy="58" r="1.5" fill="#5eecd5" opacity="0.6"/>
+  <!-- Arrow up (growth) -->
+  <g opacity="0.8">
+    <path d="M58 16l4-4 4 4" stroke="#5eecd5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M62 12v10" stroke="#5eecd5" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+</svg>
