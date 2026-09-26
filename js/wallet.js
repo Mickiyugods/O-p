@@ -126,9 +126,8 @@ class WalletManager {
         const provider = this._findProvider();
         if (!provider) return;
         let accounts;
-        try { accounts = await provider.request({ method: 'eth_requestAccounts' }); } catch {
-          try { accounts = await provider.request({ method: 'eth_accounts' }); } catch { accounts = []; }
-        }
+        try { accounts = await provider.request({ method: 'eth_accounts' }); } catch { accounts = []; }
+        if (!accounts.length) return;
         if (accounts.length) {
           this.provider = new ethers.BrowserProvider(provider);
           this.signer = await this.provider.getSigner();
@@ -437,7 +436,7 @@ class WalletManager {
   }
 
   async getTokenBalance(tokenAddress) {
-    if (!this.address) return '0';
+    if (!this.address) return 0n;
     try {
       const token = window.contractManager.getToken(tokenAddress);
       const balance = await token.balanceOf(this.address);

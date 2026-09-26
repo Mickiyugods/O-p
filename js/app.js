@@ -52,7 +52,17 @@ class Router {
 }
 
 // Featured / Official agents — add agent addresses here after deploying
-const FEATURED_TOKENS = [];
+const FEATURED_TOKENS = [
+  {
+    address: '0x183049464dbdf5916c5F7A6A791E716955419e42',
+    name: 'Ownlypad',
+    symbol: 'OWNLYPAD',
+    logo: 'https://gateway.pinata.cloud/ipfs/QmWdx3EcNJ4aYZ14DqFKoo5kqb7wd9ETC1V4HwwL7eq2y8',
+    description: 'AI Agent Launchpad on Robinhood Chain. Create, launch, and trade AI agent tokens with fair bonding curves. Non-custodial.',
+    twitter: 'https://x.com/Ownlydotfamily',
+    website: 'https://ownly.family'
+  }
+];
 
 class App {
   constructor() {
@@ -457,6 +467,7 @@ class App {
 
   // ---- TOKEN DETAIL PAGE ----
   async openToken(addr) {
+    if (this.refreshInterval) { clearInterval(this.refreshInterval); this.refreshInterval = null; }
     const sb = document.getElementById('searchBar');
     if (sb) sb.style.display = 'none';
     const ticker = document.getElementById('tickerBar');
@@ -679,7 +690,7 @@ class App {
               <div>
                 <div class="td-chart-title">${this.esc(token.symbol)} Price</div>
                 <div class="td-chart-mcap">${this.fmtUSD(token.marketCapUsd)}</div>
-                <div class="td-chart-change green">+40.78% ↗</div>
+                <div class="td-chart-change" style="color:var(--text-3)">--</div>
               </div>
               <div class="td-chart-ranges" id="chartRanges">
                 <button class="td-range-btn" data-range="300000">5M</button>
@@ -1232,12 +1243,12 @@ class App {
           balance.textContent = 'Balance: ' + this.fmtTokens(b) + ' ' + token.symbol;
           balance.dataset.raw = formatted;
           quickBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.onclick = () => {
               const pct = parseInt(btn.dataset.amt);
               const val = parseFloat(formatted) * pct / 100;
               amtInput.value = val.toString();
               this.updateEstimate(token);
-            });
+            };
           });
         });
         exec.textContent = 'Sell ' + token.symbol;
@@ -1339,6 +1350,8 @@ class App {
 
   // ---- CREATE / DEPLOY ----
   renderCreate() {
+    if (this.refreshInterval) { clearInterval(this.refreshInterval); this.refreshInterval = null; }
+    if (this._tradesInterval) { clearInterval(this._tradesInterval); this._tradesInterval = null; }
     const sb = document.getElementById('searchBar');
     if (sb) sb.style.display = 'none';
     const tb = document.getElementById('tickerBar');
@@ -1599,6 +1612,11 @@ class App {
         btn.innerHTML = '<span class="spinner"></span> Saving...';
         const deployer = await window.walletManager.signer.getAddress();
 
+        if (!result.tokenAddress) {
+          showToast('Deploy tx confirmed but token address not found. Check explorer: ' + result.txHash, 'error');
+          return;
+        }
+
         window.tokenRegistry.add({
           address: result.tokenAddress,
           curve: result.curveAddress,
@@ -1629,6 +1647,8 @@ class App {
 
   // ---- PORTFOLIO ----
   async renderPortfolio() {
+    if (this.refreshInterval) { clearInterval(this.refreshInterval); this.refreshInterval = null; }
+    if (this._tradesInterval) { clearInterval(this._tradesInterval); this._tradesInterval = null; }
     const sb = document.getElementById('searchBar');
     if (sb) sb.style.display = 'none';
 

@@ -58,7 +58,7 @@ class TokenRegistry {
     this.tokens = this.tokens.filter(t => t._ownly);
     this._save();
     this._onChainCache = new Map();
-    this._dbSynced = false;
+    this._dbSyncedAt = 0;
   }
 
   _loadDiscoveryCache() {
@@ -117,8 +117,8 @@ class TokenRegistry {
   }
 
   async _syncFromDb() {
-    if (this._dbSynced) return;
-    this._dbSynced = true;
+    if (Date.now() - this._dbSyncedAt < 30000) return;
+    this._dbSyncedAt = Date.now();
     const sb = getSupabase();
     if (!sb) return;
     try {
@@ -127,7 +127,6 @@ class TokenRegistry {
         .select('*')
         .order('created_at', { ascending: false });
       if (error || !data) return;
-      const dbAddresses = new Set(data.map(r => r.address?.toLowerCase()));
       for (const row of data) {
         const addr = row.address?.toLowerCase();
         if (!addr) continue;
@@ -152,11 +151,6 @@ class TokenRegistry {
           launchedAt: row.created_at,
           _ownly: true
         });
-      }
-      for (const local of this.tokens) {
-        if (local.address && !dbAddresses.has(local.address.toLowerCase())) {
-          this._saveToDb(local);
-        }
       }
       this._save();
     } catch (e) {

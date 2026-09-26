@@ -131,6 +131,8 @@ class ContractManager {
       }
     }
     await new Promise(r => setTimeout(r, 500));
+    const currentChain = await p.request({ method: 'eth_chainId' });
+    if (currentChain !== CONTRACTS.CHAIN_CONFIG.chainId) return false;
     const wm = window.walletManager;
     if (wm && p) {
       wm.provider = new ethers.BrowserProvider(p);
